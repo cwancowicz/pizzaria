@@ -43,6 +43,23 @@ class CustomerService(
   }
 
   /**
+   * Returns the CustomerDto with given email
+   *
+   * @param qf Optional query field to search by
+   * @param qv Optional query value
+   * @return CustomerDto if exists, Null if there is no customer with given email
+   */
+  fun getCustomerDtos(pageable: Pageable, qf: String, qv: Boolean): Page<CustomerDto> {
+    if (qf.equals("receivePromos")) {
+      return customerRepository.findAllByReceivePromos(qv, pageable).map { CustomerMapper.map(it) }
+    } else if (qf.equals("delivery")) {
+      return customerRepository.findAllByDelivery(qv, pageable).map { CustomerMapper.map(it) }
+    }
+
+    return customerRepository.findAll(pageable).map { CustomerMapper.map(it) }
+  }
+
+  /**
    * Updates a CustomerDto with the given email
    *
    * @return updated CustomerDto
@@ -51,6 +68,8 @@ class CustomerService(
     val existingCustomer = getCustomer(customerDto.email)
     existingCustomer.toppings.clear()
     existingCustomer.toppings.addAll(ToppingMapper.map(customerDto.toppings, existingCustomer))
+    existingCustomer.delivery = customerDto.delivery
+    existingCustomer.receivePromos = customerDto.receivePromos
 
     return CustomerMapper.map(customerRepository.save(existingCustomer))
   }

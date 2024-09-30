@@ -9,6 +9,7 @@ import com.accumulus.code_challenge.pizzaria.repositories.CustomerRepository
 import com.accumulus.code_challenge.pizzaria.repositories.ToppingRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
@@ -93,5 +94,23 @@ class CustomerServiceTest {
   fun shouldThrowExceptionWhenGetCustomerDtoDoesNotExist() {
     every { customerRepository.findByEmail("test@gmail.com") } answers { null }
     assertThrows<GeneralCustomerException> { customerDtoService.getCustomerDto("test@gmail.com") }
+  }
+
+  @Test
+  fun shouldGetAllCustomersByReceivePromos() {
+    val pageable = mockk<Pageable>()
+    val page = PageImpl(mutableListOf(Customer(email = "test@gmail.com")))
+    every { customerRepository.findAllByReceivePromos(true, pageable) } answers { page }
+    customerDtoService.getCustomerDtos(pageable, "receivePromos", true)
+    verify { customerRepository.findAllByReceivePromos(true, pageable) }
+  }
+
+  @Test
+  fun shouldGetAllCustomersByDelivery() {
+    val pageable = mockk<Pageable>()
+    val page = PageImpl(mutableListOf(Customer(email = "test@gmail.com")))
+    every { customerRepository.findAllByDelivery(true, pageable) } answers { page }
+    customerDtoService.getCustomerDtos(pageable, "delivery", true)
+    verify { customerRepository.findAllByDelivery(true, pageable) }
   }
 }

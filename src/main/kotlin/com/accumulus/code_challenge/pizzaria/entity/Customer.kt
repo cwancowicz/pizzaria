@@ -11,5 +11,7 @@ data class Customer(
     cascade = [CascadeType.ALL],
     fetch = FetchType.LAZY,
     orphanRemoval = true)
-  var toppings: MutableList<Topping> = ArrayList()
+  var toppings: MutableList<Topping> = ArrayList(),
+  var receivePromos: Boolean = false,
+  var delivery: Boolean = false
 )

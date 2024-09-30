@@ -1,9 +1,10 @@
 ## Usage
 - [Endpoints](#endpoints)
-  - [Create Toppings Preference](#1-create-new-customer-toppings-preference)
-  - [Update Toppings Preference](#2-update-customer-toppings-preference)
-  - [Get Toppings Preference](#3-get-customer-toppings-preference)
+  - [Create Customer Toppings Preference](#1-create-new-customer-toppings-preference)
+  - [Update Customer Toppings Preference](#2-update-customer-toppings-preference)
+  - [Get Customer Toppings Preference](#3-get-customer-toppings-preference)
   - [Get Popular Toppings](#4-get-all-customer-preference-counts)
+  - [Get All Customers By Fields](#5-get-all-customers)
 
 ### Endpoints
 
@@ -19,6 +20,14 @@ The following is a list of endpoints available for use.
     "toppings": ["pepperoni", "mushrooms", "olives"]
   }
   ```
+- **Example Call:**
+`curl --location 'http://localhost:8080/v1/api/customer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test@gmail.com",
+    "toppings":["mushrooms","olives","cheese"],
+    "receivePromos": true
+}           '`
 
 #### 2. Update Customer Toppings Preference
 - **Endpoint:** `PUT/v1/api/customer`
@@ -30,6 +39,14 @@ The following is a list of endpoints available for use.
     "toppings": ["jalapenos", "extra cheese"]
   }
   ```
+- **Example Call:**
+`curl --location --request PUT 'http://localhost:8080/v1/api/customer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test@gmail.com",
+    "toppings":["mushrooms","olives","cheese"],
+    "receivePromos": false
+}           '`
 
 #### 3. Get Customer Toppings Preference
 - **Endpoint:** `GET /v1/api/customer/{email}`
@@ -43,9 +60,16 @@ The following is a list of endpoints available for use.
     "toppings": ["pepperoni", "mushrooms", "olives"]
   }
   ```
+ **Example Call:**
+`curl --location --request GET 'http://localhost:8080/v1/api/customer/test@gmail.com' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test@gmail.com",
+    "toppings":["mushrooms", "onions"]
+}           '`
 
 #### 4. Get All Customer Preference Counts
-- **Endpoint:** `GET /api/customer/topping-count`
+- **Endpoint:** `GET /v1/api/customer/topping-count`
   - This endpoint is contained in a pageable response to control the number of results returned. Response can be controlled with the parameters:
     - size
     - pageNumber
@@ -99,5 +123,66 @@ The following is a list of endpoints available for use.
   },
   "numberOfElements": 4,
   "empty": false
+}
+```
+
+#### 5. Get All Customers
+- **Endpoint:** `GET /v1/api/customer/topping-count`
+  - This endpoint is contained in a pageable response to control the number of results returned. Response can be controlled with the parameters:
+    - size
+    - pageNumber
+    - order
+    - qt: Query Term [receivePromos, delivery] (Optional)
+    - qf: [true, false] (Optional)
+- **Description:** Get all customers and optionally filter by receivePromos or delivery
+- **Example Call:**
+```
+curl --location --request GET 'http://localhost:8080/v1/api/customer?qf=receivePromos&qv=true' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test@gmail.com",
+    "toppings":["mushrooms", "onions"]
+}           '
+```
+- **Response:**
+```json
+{
+    "content": [
+        {
+            "email": "test@gmail.com",
+            "toppings": [
+                "mushrooms",
+                "olives",
+                "cheese"
+            ],
+            "receivePromos": true,
+            "delivery": false
+        }
+    ],
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 10,
+        "sort": {
+            "empty": true,
+            "unsorted": true,
+            "sorted": false
+        },
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "size": 10,
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "unsorted": true,
+        "sorted": false
+    },
+    "numberOfElements": 1,
+    "empty": false
 }
 ```
